@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Armazenamento de Clientes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center">
+                    <i class="fas fa-folder-open text-blue-600 text-2xl mr-3"></i>
+                    <h1 class="text-2xl font-bold text-gray-900">Sistema de Armazenamento</h1>
+                </div>
+                <div class="flex gap-3">
+                    <button id="manageGroupsBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-users mr-2"></i>
+                        Gerenciar Grupos
+                    </button>
+                    <button id="addClientBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-plus mr-2"></i>
+                        Novo Cliente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Search and Filter -->
+        <div class="mb-6">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar clientes..." 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+                <select id="groupFilterSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="all">Todos os grupos</option>
+                </select>
+                <select id="filterSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="all">Todos os clientes</option>
+                    <option value="active">Clientes ativos</option>
+                    <option value="inactive">Clientes inativos</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Content Sections -->
+        <div id="contentSections">
+            <!-- Groups Section -->
+            <div class="mb-8">
+                <div class="section-header bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50 transition-colors" data-section="groups">
+                    <div class="flex items-center justify-between p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-down text-gray-400 mr-3 transition-transform" id="groupsIcon"></i>
+                            <i class="fas fa-users text-blue-600 mr-3"></i>
+                            <h2 class="text-lg font-semibold text-gray-900">Grupos</h2>
+                            <span id="groupsCount" class="ml-2 bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">0</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-500">Clique para expandir</span>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                <div id="groupsContent" class="section-content hidden mt-4">
+                    <div id="groupsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <!-- Group cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clients Section -->
+            <div class="mb-8">
+                <div class="section-header bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50 transition-colors" data-section="clients">
+                    <div class="flex items-center justify-between p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-down text-gray-400 mr-3 transition-transform" id="clientsIcon"></i>
+                            <i class="fas fa-user-friends text-green-600 mr-3"></i>
+                            <h2 class="text-lg font-semibold text-gray-900">Clientes</h2>
+                            <span id="clientsCount" class="ml-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">0</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-500">Clique para expandir</span>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                <div id="clientsContent" class="section-content hidden mt-4">
+                    <div id="clientsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <!-- Client cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-12">
+            <i class="fas fa-users text-gray-300 text-6xl mb-4"></i>
+            <h3 class="text-xl font-medium text-gray-900 mb-2">Nenhum cliente encontrado</h3>
+            <p class="text-gray-500 mb-6">Comece adicionando seu primeiro cliente para organizar os arquivos.</p>
+            <button id="emptyStateAddBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
+                <i class="fas fa-plus mr-2"></i>
+                Adicionar Cliente
+            </button>
+        </div>
+    </main>
+
+    <!-- Modal for Add/Edit Client -->
+    <div id="clientModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 id="modalTitle" class="text-lg font-semibold text-gray-900">Novo Cliente</h3>
+                    <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="clientForm" class="p-6">
+                    <div class="mb-4">
+                        <label for="clientName" class="block text-sm font-medium text-gray-700 mb-2">Nome do Cliente</label>
+                        <input type="text" id="clientName" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div class="mb-4">
+                        <label for="clientEmail" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="clientEmail" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div class="mb-4">
+                        <label for="clientPhone" class="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
+                        <input type="tel" id="clientPhone"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div class="mb-4">
+                        <label for="clientGroup" class="block text-sm font-medium text-gray-700 mb-2">Grupo</label>
+                        <select id="clientGroup" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Sem grupo</option>
+                        </select>
+                    </div>
+                    <div class="mb-6">
+                        <label for="clientStatus" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select id="clientStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="active">Ativo</option>
+                            <option value="inactive">Inativo</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end gap-3">
+                        <button type="button" id="cancelBtn" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                            Salvar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Manage Groups -->
+    <div id="groupsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 class="text-lg font-semibold text-gray-900">Gerenciar Grupos</h3>
+                    <button id="closeGroupsModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <!-- Add New Group Form -->
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <h4 class="font-medium text-gray-900 mb-3">Adicionar Novo Grupo</h4>
+                        <form id="groupForm" class="flex gap-3">
+                            <input type="text" id="groupName" placeholder="Nome do grupo" required
+                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <input type="color" id="groupColor" value="#3b82f6"
+                                   class="w-12 h-10 border border-gray-300 rounded-lg cursor-pointer">
+                            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
+                                <i class="fas fa-plus mr-1"></i>Adicionar
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Groups List -->
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-3">Grupos Existentes</h4>
+                        <div id="groupsList" class="space-y-2">
+                            <!-- Groups will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Group Details -->
+    <div id="groupDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 id="groupDetailsTitle" class="text-lg font-semibold text-gray-900">Detalhes do Grupo</h3>
+                    <button id="closeGroupDetailsModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                    <!-- Group Info -->
+                    <div id="groupInfo" class="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <!-- Group info will be dynamically inserted here -->
+                    </div>
+
+                    <!-- Add Client to Group Section -->
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-medium text-gray-900">Adicionar Cliente ao Grupo</h4>
+                            <button id="addClientToGroupBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+                                <i class="fas fa-user-plus mr-2"></i>
+                                Adicionar Cliente
+                            </button>
+                        </div>
+                        
+                        <!-- Add Client Form -->
+                        <div id="addClientToGroupForm" class="hidden mb-4 p-4 border border-gray-300 rounded-lg">
+                            <div class="flex gap-3">
+                                <select id="clientToAddSelect" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">Selecione um cliente...</option>
+                                </select>
+                                <button type="button" id="confirmAddClientBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
+                                    Adicionar
+                                </button>
+                                <button type="button" id="cancelAddClientBtn" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group Clients Section -->
+                    <div class="mb-6">
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">Clientes do Grupo</h4>
+                        <div id="groupClientsList" class="space-y-2">
+                            <!-- Group clients will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Client Details and Files -->
+    <div id="clientDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 id="clientDetailsTitle" class="text-lg font-semibold text-gray-900">Detalhes do Cliente</h3>
+                    <button id="closeDetailsModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                    <!-- Client Info -->
+                    <div id="clientInfo" class="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <!-- Client info will be dynamically inserted here -->
+                    </div>
+
+                    <!-- Files Section -->
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-medium text-gray-900">Documentos</h4>
+                            <div class="flex gap-2">
+                                <button id="downloadByTypeBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center">
+                                    <i class="fas fa-filter mr-2"></i>
+                                    Baixar por Tipo
+                                </button>
+                                <button id="downloadAllFilesBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                                    <i class="fas fa-download mr-2"></i>
+                                    Baixar Todos
+                                </button>
+                                <button id="uploadFileBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+                                    <i class="fas fa-upload mr-2"></i>
+                                    Upload Arquivo
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- File Upload Area -->
+                        <div id="fileUploadArea" class="hidden mb-4 p-4 border-2 border-dashed border-gray-300 rounded-lg text-center">
+                            <input type="file" id="fileInput" multiple class="hidden">
+                            <div class="space-y-2">
+                                <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl"></i>
+                                <p class="text-gray-600">Arraste arquivos aqui ou clique para selecionar</p>
+                                <button type="button" id="selectFilesBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                                    Selecionar Arquivos
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Files List -->
+                        <div id="filesList" class="space-y-2">
+                            <!-- Files will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Download by Type -->
+    <div id="downloadByTypeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 class="text-lg font-semibold text-gray-900">Baixar por Tipo</h3>
+                    <button id="closeDownloadByTypeModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-600 mb-4">Selecione o tipo de arquivo que deseja baixar:</p>
+                    <div id="fileTypesList" class="space-y-2 mb-6">
+                        <!-- File types will be dynamically inserted here -->
+                    </div>
+                    <div class="flex justify-end gap-3">
+                        <button id="cancelDownloadByType" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl mr-3"></i>
+                        <h3 class="text-lg font-semibold text-gray-900">Confirmar Exclusão</h3>
+                    </div>
+                    <p id="confirmMessage" class="text-gray-600 mb-6">Tem certeza que deseja excluir este item?</p>
+                    <div class="flex justify-end gap-3">
+                        <button id="cancelConfirm" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">
+                            Cancelar
+                        </button>
+                        <button id="confirmDelete" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">
+                            Excluir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
