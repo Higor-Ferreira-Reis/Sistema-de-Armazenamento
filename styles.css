@@ -121,7 +121,36 @@
     }
     
     .client-card, .group-card {
-        padding: 0.75rem;
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
+    #groupsGrid, #clientsGrid {
+        grid-template-columns: 1fr !important;
+    }
+    .modal > div > div, .modal .max-w-md, .modal .max-w-2xl, .modal .max-width-4xl {
+        max-width: 95vw !important;
+        min-width: 0;
+        padding: 0.5rem !important;
+    }
+    .modal .p-6 {
+        padding: 1rem !important;
+    }
+    .modal h3, .modal h4 {
+        font-size: 1.1rem !important;
+    }
+    .modal input, .modal select, .modal button {
+        font-size: 1rem !important;
+    }
+    .space-y-2 > * + * {
+        margin-top: 0.5rem !important;
+    }
+    .flex.items-center.justify-between.p-4 {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
 }
 
@@ -191,5 +220,21 @@ button:focus, input:focus, select:focus {
         break-inside: avoid;
         box-shadow: none;
         border: 1px solid #e5e7eb;
+    }
+}
+
+/* Ajuste para evitar overflow de textos longos */
+.client-card h3, .client-card p, .group-card h3, .group-card p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Ajuste para botões ficarem em coluna no mobile */
+@media (max-width: 640px) {
+    .flex-col.sm\:flex-row {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
     }
 } 

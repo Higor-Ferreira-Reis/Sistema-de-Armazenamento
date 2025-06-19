@@ -12,18 +12,18 @@
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
     <header class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div class="flex items-center">
+        <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center py-4 gap-3 sm:gap-0">
+                <div class="flex items-center mb-2 sm:mb-0">
                     <i class="fas fa-folder-open text-blue-600 text-2xl mr-3"></i>
-                    <h1 class="text-2xl font-bold text-gray-900">Sistema de Armazenamento</h1>
+                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Sistema de Armazenamento</h1>
                 </div>
-                <div class="flex gap-3">
-                    <button id="manageGroupsBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                    <button id="manageGroupsBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center w-full sm:w-auto">
                         <i class="fas fa-users mr-2"></i>
                         Gerenciar Grupos
                     </button>
-                    <button id="addClientBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <button id="addClientBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center w-full sm:w-auto">
                         <i class="fas fa-plus mr-2"></i>
                         Novo Cliente
                     </button>
@@ -33,7 +33,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-6 sm:py-8">
         <!-- Search and Filter -->
         <div class="mb-6">
             <div class="flex flex-col sm:flex-row gap-4">
@@ -41,13 +41,13 @@
                     <div class="relative">
                         <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         <input type="text" id="searchInput" placeholder="Buscar clientes..." 
-                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                     </div>
                 </div>
-                <select id="groupFilterSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select id="groupFilterSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                     <option value="all">Todos os grupos</option>
                 </select>
-                <select id="filterSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select id="filterSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                     <option value="all">Todos os clientes</option>
                     <option value="active">Clientes ativos</option>
                     <option value="inactive">Clientes inativos</option>
@@ -64,17 +64,17 @@
                         <div class="flex items-center">
                             <i class="fas fa-chevron-down text-gray-400 mr-3 transition-transform" id="groupsIcon"></i>
                             <i class="fas fa-users text-blue-600 mr-3"></i>
-                            <h2 class="text-lg font-semibold text-gray-900">Grupos</h2>
+                            <h2 class="text-base sm:text-lg font-semibold text-gray-900">Grupos</h2>
                             <span id="groupsCount" class="ml-2 bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">0</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span class="text-sm text-gray-500">Clique para expandir</span>
+                            <span class="text-xs sm:text-sm text-gray-500">Clique para expandir</span>
                             <i class="fas fa-chevron-right text-gray-400"></i>
                         </div>
                     </div>
                 </div>
                 <div id="groupsContent" class="section-content hidden mt-4">
-                    <div id="groupsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <div id="groupsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         <!-- Group cards will be dynamically inserted here -->
                     </div>
                 </div>
@@ -87,11 +87,11 @@
                         <div class="flex items-center">
                             <i class="fas fa-chevron-down text-gray-400 mr-3 transition-transform" id="clientsIcon"></i>
                             <i class="fas fa-user-friends text-green-600 mr-3"></i>
-                            <h2 class="text-lg font-semibold text-gray-900">Clientes</h2>
+                            <h2 class="text-base sm:text-lg font-semibold text-gray-900">Clientes</h2>
                             <span id="clientsCount" class="ml-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">0</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span class="text-sm text-gray-500">Clique para expandir</span>
+                            <span class="text-xs sm:text-sm text-gray-500">Clique para expandir</span>
                             <i class="fas fa-chevron-right text-gray-400"></i>
                         </div>
                     </div>
